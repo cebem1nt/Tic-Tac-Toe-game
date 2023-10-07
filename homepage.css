@@ -1,38 +1,77 @@
 body{
 	font-family: 'Montserrat', sans-serif;
+	color: white;
+	background-color: black;
+	font-weight: 100;
+	user-select: none;
+}
+.b:disabled{
+	background-color: rgb(255, 255, 255);
 	color: black;
-	font-weight: 800;
+}
+.X{
+	color: red;
+	font-weight: bolder;
+}
+.O{
+	color: blue;
+	font-weight: bolder;
+}
+.won{
+	color: goldenrod;
+	font-weight: bolder;
 }
 .board{
 	display: grid;
 	grid-template-columns: repeat(3,1fr);
 	grid-gap:10px;
-	width:190px;
-	height:100px;
-	margin: 10px auto 0 auto;
+	width: 200px;
+	height: 200px;
+	margin: 0 auto 0 auto;
 }
 
 .b{
-	height:50px;
-	width: 50px;
+	height:60px;
+	width: 60px;
+	padding: 0;
+	color: black;
+	border-radius: 10%;
+	background-color: rgb(255, 255, 255);
 }
 
 .reset{
-	border: 1px solid black;
-	text-align: center;
+	border: 1px solid white;
+	border-radius: 10px 10px 10px 10px;
 	width: 200px;
-	user-select: none;
+	margin: 0 auto 0 auto;
 }
-.turn{
-	text-align: center;
-	width: 200px;
-	user-select: none;
-	margin: 15px auto 0 auto;
+
+.output{
 	font-size: 25px;
 }
+
 .container{
-	margin-top: 100px;
-	flex-direction: row;
-	display: flex;
-	justify-content: center;
+	text-align: center;
+	width: 50vh;
+	height: auto;
+	margin: 2% auto 0 auto;
+	align-items: center;
+}
+.container div{
+	margin-bottom: 20px;
+}
+
+@media(max-width: 1200px){
+	.container{
+		margin-top: 20em;
+		transform: scale(2.0);
+	}
+	.container div{
+		margin-bottom: 2em;
+		margin-right: auto;
+		margin-left: auto;
+	}
+	.reset{
+		margin-top: 2em;
+	}
 }
