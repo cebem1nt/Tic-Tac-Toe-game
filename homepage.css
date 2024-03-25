@@ -10,11 +10,11 @@ body{
 	color: black;
 }
 .X{
-	color: red;
+	color: green;
 	font-weight: bolder;
 }
 .O{
-	color: blue;
+	color: green;
 	font-weight: bolder;
 }
 .won{

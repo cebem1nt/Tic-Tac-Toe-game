@@ -1,78 +1,95 @@
 const reset = document.querySelector(".reset");
 const output = document.querySelector(".output");
-const btns = document.querySelectorAll(".b");
+const fields = document.querySelectorAll(".b");
 
-let count = 0;
-let isFinished = false;
+class Game {
+	constructor(fieldElements, outputElement) {
+		this.fields = fieldElements
+		this.output = outputElement
+		this.xTurn = true
+		this.isGameOver = false
+		this.b = [
+			'', '', '', 
+			'', '', '',
+            '', '', '' 
+		]
+	}
 
-let board = [  '', '', '', 
-			   '', '', '',
-               '', '', ''  ];
+	setOutput(text){
+		this.output.innerHTML = text
+	}
 
-function won() {
-  for (let i = 0; i < board.length; i += 3) {
-    if (board[i] !== '' && board[i] === board[i+1] && board[i+1] === board[i+2]) {
-		output.innerHTML = `Player <span class="won">${board[i]}</span> won!`;
-		isFinished = true;
-    }
-  }
-  for (let j = 0; j < 3; j++) {
-    if (board[j] !== '' && board[j] === board[j+3] && board[j+3] === board[j+6]) {
-		output.innerHTML = `Player <span class="won">${board[j]}</span> won!`;
-		isFinished = true;
-    }
-  }
-    if (board[0] !== '' && board[0] === board[4] && board[4] === board[8]) {
-    output.innerHTML = `Player <span class="won">${board[0]}</span> won!`;
-	isFinished = true;
-  }
-    if (board[2] !== '' && board[2] === board[4] && board[4] === board[6]) {
-    output.innerHTML = `Player <span class="won">${board[2]}</span> won!`;
-	isFinished = true;
-  }
-  	if (!board.includes('')){
-		if(!isFinished){
-			output.innerHTML = 'Draw!'
+	checkWinner(){
+		for (let i = 0; i < this.b.length; i += 3) {
+		    if (this.b[i] !== '' && this.b[i] === this.b[i+1] && this.b[i+1] === this.b[i+2]) {
+				this.setOutput(`Player <span class="won">${this.b[i]}</span> won!`)
+				this.isGameOver = true;
+		    }
+		  }
+
+	  	for (let j = 0; j < 3; j++) {
+		    if (this.b[j] !== '' && this.b[j] === this.b[j+3] && this.b[j+3] === this.b[j+6]) {
+				this.setOutput(`Player <span class="won">${this.b[j]}</span> won!`)
+				this.isGameOver = true;
+		    }
+	  	}
+
+	    if (this.b[0] !== '' && this.b[0] === this.b[4] && this.b[4] === this.b[8]) {
+		    this.setOutput(`Player <span class="won">${this.b[0]}</span> won!`)
+			this.isGameOver = true;
+	  	}
+
+	    if (this.b[2] !== '' && this.b[2] === this.b[4] && this.b[4] === this.b[6]) {
+		    this.setOutput(`Player <span class="won">${this.b[2]}</span> won!`)
+			this.isGameOver = true;
+	  	}
+
+	  	if (!this.b.includes('')){
+			if(!this.isGameOver){
+				this.setOutput('Draw!')
+			}
 		}
+	}
+
+	checkGameState(){
+		this.checkWinner()
+		if (this.isGameOver){
+			for (let i = 0; i < this.fields.length; i++) {
+				this.fields[i].disabled = true;	
+			}
+		}
+	}
+
+	resetBoard() {
+		for(let i = 0; i < this.fields.length; i++){
+			this.fields[i].disabled = false;
+			this.fields[i].innerHTML = "";
+		}
+		this.isGameOver = false;
+		this.b = ['', '', '', '', '', '', '', '', ''];   
+		this.setOutput("Lets start!")
 	}
 }
 
-function finish(){
-	won()
-	if (isFinished){
-		for (let i = 0; i < btns.length; i++) {
-			btns[i].disabled = true;	
-		}
-	}
-}
+ttt = new Game(fields, output)
 
-for(let i = 0; i < btns.length ; i++){
-	btns[i].addEventListener('click', ()=> {
-		count++;
-
-		 if (count % 2 === 0){
-			 btns[i].innerHTML = '<span class ="O"> O </span>';
-			  output.innerHTML = 'Now player <span class ="X"> X </span>!';
-				 btns[i].disabled = true;
-				  board[i] = "O";
-				   finish()
-		 } else {
-			 btns[i].innerHTML = '<span class ="X"> X </span>'
-		  	  output.innerHTML = 'Now player <span class ="O"> O </span>!'
-			    btns[i].disabled = true;
-				 board[i] = "X";
-				  finish()
-		 }
-	});
-}
-
-function Reset(){
+function setFunctionality(ttt, btns, reset){
 	for(let i = 0; i < btns.length ; i++){
-		btns[i].disabled = false;
-		 btns[i].innerHTML = "";
-		  isFinished = false; 
-		  output.innerHTML = "Lets start!";
-		   board = ['', '', '', '', '', '', '', '', ''];   
+		btns[i].addEventListener('click', ()=> {
+			char = ttt.xTurn === true ? 'X' : 'O'
+			nchar = !ttt.xTurn === true ? 'X' : 'O'
+
+			btns[i].innerHTML = `<span class ="${char}">${char}</span>`
+			ttt.setOutput(`Now player <span class ="${nchar}"> ${nchar} </span>!`)
+			ttt.b[i] = char;
+			ttt.checkGameState()
+
+			btns[i].disabled = true;
+			ttt.xTurn = !ttt.xTurn
+		})
 	}
+
+	reset.addEventListener('click', ()=>{ ttt.reset() })
 }
 
+setFunctionality(ttt, fields, reset)
