@@ -89,7 +89,7 @@ function setFunctionality(ttt, btns, reset){
 		})
 	}
 
-	reset.addEventListener('click', ()=>{ ttt.reset() })
+	reset.addEventListener('click', ()=>{ ttt.resetBoard() })
 }
 
 setFunctionality(ttt, fields, reset)
