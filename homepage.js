@@ -1,7 +1,3 @@
-const reset = document.querySelector(".reset");
-const output = document.querySelector(".output");
-const fields = document.querySelectorAll(".b");
-
 class Game {
 	constructor(fieldElements, outputElement) {
 		this.fields = fieldElements
@@ -68,28 +64,153 @@ class Game {
 		this.isGameOver = false;
 		this.b = ['', '', '', '', '', '', '', '', ''];   
 		this.setOutput("Lets start!")
+		this.xTurn = true
 	}
 }
 
-ttt = new Game(fields, output)
+class Bot {
+	
+	emptySquares(board) {
+		let emptySquares = []
+		let i = 0
+		board.forEach((square) => {
+			if (square === '') {
+				emptySquares.push(i)
+			}
+			i++
+		})
+		return emptySquares
+	}
+	
+	evaluatePosition(board) {
+		for (let i = 0; i < 9; i += 3) {
+			if (board[i] !== '' && board[i] === board[i+1] && board[i+1] === board[i+2]) {
+				return board[i]
+			}
+		}
 
-function setFunctionality(ttt, btns, reset){
-	for(let i = 0; i < btns.length ; i++){
+		for (let i = 0; i < 3; i++) {
+			if (board[i] !== '' && board[i] === board[i+3] && board[i+3] === board[i+6]) {
+				return board[i]
+			}
+		}
+
+		if (board[0] !== '' && board[0] === board[4] && board[4] === board[8]) {
+			return board[0]
+		}
+		
+		if (board[2] !== '' && board[2] === board[4] && board[4] === board[6]) {
+			return board[2]
+		}
+
+		if (!board.includes('')) {
+			return 'draw'
+		}
+
+		return null
+	}
+	
+	findRandomMove(board) {
+		const emptySquares = this.emptySquares(board)
+		if (emptySquares.length === 0) {
+			return -1
+		}
+		const randomIndex = Math.floor(Math.random() * emptySquares.length)
+		return emptySquares[randomIndex]
+	}
+	
+	findMove(board) {
+		const emptySquares = this.emptySquares(board)
+		if (emptySquares.length === 0) {
+			return -1
+		}
+
+		let bestMove = -1
+		let bestScore = -Infinity
+		for (let i = 0; i < emptySquares.length; i++) {
+			const move = emptySquares[i]
+			board[move] = 'O'
+			const score = this.minimax(board, 0, false)
+			board[move] = ''
+			if (score > bestScore) {
+				bestScore = score
+				bestMove = move
+			}
+		}
+		return bestMove;
+	}
+
+	minimax(board, depth, isMaximizing) {
+		const result = this.evaluatePosition(board)
+		if (result !== null) {
+			if (result === 'O') {
+				return 10 - depth
+			} else if (result === 'X') {
+				return depth - 10
+			} else {
+				return 0
+			}
+		}
+		
+		if (isMaximizing) {
+			let bestScore = -Infinity
+			const emptyIndices = this.emptySquares(board)
+			for (let i = 0; i < emptyIndices.length; i++) {
+				const move = emptyIndices[i]
+				board[move] = 'O'
+				const score = this.minimax(board, depth + 1, false);
+				board[move] = ''
+				bestScore = Math.max(bestScore, score);
+			}
+			return bestScore;
+		} else {
+			let bestScore = Infinity
+			const emptyIndices = this.emptySquares(board)
+			for (let i = 0; i < emptyIndices.length; i++) {
+				const move = emptyIndices[i]
+				board[move] = 'X'
+				const score = this.minimax(board, depth + 1, true)
+				board[move] = ''
+				bestScore = Math.min(bestScore, score)
+			}
+			return bestScore
+		}
+	}
+}
+
+const resetButton = document.querySelector(".reset")
+const output = document.querySelector(".output")
+const fields = document.querySelectorAll(".b")
+
+function gameServe(game, btns, reset, bot) {
+	for (let i = 0; i < btns.length ; i++) {
 		btns[i].addEventListener('click', ()=> {
-			char = ttt.xTurn === true ? 'X' : 'O'
-			nchar = !ttt.xTurn === true ? 'X' : 'O'
-
+			const char = game.xTurn ? 'X' : 'O'
+			const nchar = !game.xTurn ? 'X' : 'O'
+			
 			btns[i].innerHTML = `<span class ="${char}">${char}</span>`
-			ttt.setOutput(`Now player <span class ="${nchar}"> ${nchar} </span>!`)
-			ttt.b[i] = char;
-			ttt.checkGameState()
+			game.setOutput(`Now player <span class ="${nchar}">${nchar}</span>!`)
+			game.b[i] = char
+			game.checkGameState()
 
-			btns[i].disabled = true;
-			ttt.xTurn = !ttt.xTurn
+			btns[i].disabled = true
+			game.xTurn = !game.xTurn
+			
+			let move = bot.findMove(game.b)
+			if (!game.xTurn && move !== -1) {
+				btns[move].click()
+			}
 		})
 	}
-
-	reset.addEventListener('click', ()=>{ ttt.resetBoard() })
 }
 
-setFunctionality(ttt, fields, reset)
+function main() {
+	let game = new Game(fields, output)
+	let bot = new Bot()
+	
+	gameServe(game, fields, resetButton, bot)
+	
+	resetButton.addEventListener('click', () => {game.resetBoard()} )
+}
+
+main()

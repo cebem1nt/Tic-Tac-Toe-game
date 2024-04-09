@@ -39,9 +39,9 @@ body{
 	background-color: rgb(255, 255, 255);
 }
 
-.reset{
+.reset, .play-with{
 	border: 1px solid white;
-	border-radius: 10px 10px 10px 10px;
+	border-radius: 10px;
 	width: 200px;
 	margin: 0 auto 0 auto;
 }
@@ -61,17 +61,21 @@ body{
 	margin-bottom: 20px;
 }
 
+.buttons-wrap {
+	display: flex; 
+	flex-direction: column;
+	gap: 1vh;
+}
+
 @media(max-width: 1200px){
 	.container{
 		margin-top: 20em;
 		transform: scale(2.0);
 	}
+	
 	.container div{
 		margin-bottom: 2em;
 		margin-right: auto;
 		margin-left: auto;
-	}
-	.reset{
-		margin-top: 2em;
 	}
 }
